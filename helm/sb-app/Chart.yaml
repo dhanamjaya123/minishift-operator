@@ -1,0 +1,14 @@
+apiVersion: v1
+description: Spring Boot App example Helm chart
+keywords:
+  - http
+  - spring boot
+  - www
+  - web
+name: sb-app
+version: 0.1.0
+sources:
+  - https://github.com/dav1dli/minishift-operator
+maintainers:
+  - name: dav1dli
+    email: dav1dli@netscape.net
