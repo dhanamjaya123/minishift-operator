@@ -11,10 +11,12 @@ docker push 172.30.1.1:5000/minishift-operator/sb-app-docker
 # Deploy
 ## S2I
 S2I app:
-```oc new-app https://github.com/dav1dli/minishift-operator.git \
+```
+oc new-app https://github.com/dav1dli/minishift-operator.git \
      --context-dir=gs-spring-boot-docker \           
      --docker-image="registry.redhat.io/redhat-openjdk-18/openjdk18-openshift"
-oc expose svc/minishift-operator```
+oc expose svc/minishift-operator
+```
 
 ## YAML
 Install: `oc create -f yaml/sb-example.yaml`
