@@ -20,8 +20,10 @@ oc expose svc/minishift-operator
 
 ## YAML
 Install: `oc create -f yaml/sb-example.yaml`
+
 Uninstall: `oc delete -f yaml/sb-example.yaml`
 
 ## Helm
 Install helm chart: `helm install ./helm/sb-app -n sb-app`
+
 Uninstall: `helm delete --purge sb-app`
