@@ -6,6 +6,7 @@ replicaCount: 1
 application_domain:
 
 image:
+  name: sb-app-docker
   repository: quay.io/dav1dli/sb-app-docker
   tag: latest
   pullPolicy: IfNotPresent

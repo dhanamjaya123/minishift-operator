@@ -10,3 +10,4 @@ oc new-project helm-demo
 oc policy add-role-to-user edit "system:serviceaccount:${TILLER_NAMESPACE}:tiller"
 helm install helm/sb-app -n sb-app
 ```
+Cleanup: `helm del --purge sb-app`
