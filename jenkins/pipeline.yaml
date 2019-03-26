@@ -1,0 +1,12 @@
+kind: "BuildConfig"
+apiVersion: "v1"
+metadata:
+  name: "sbapp-pipeline"
+spec:
+  source:
+    git:
+      uri: "https://github.com/dav1dli/minishift-operator.git"
+  strategy:
+    jenkinsPipelineStrategy:
+      jenkinsfilePath: jenkins/Jenkinsfile
+    type: JenkinsPipeline

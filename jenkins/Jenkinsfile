@@ -1,0 +1,121 @@
+#!groovy
+// An example of a declarative Jenkins pipeline
+// showing how to build, deploy and promote a Spring Boot project
+// on Openshift
+
+pipeline {
+  agent {
+    node {
+      label 'maven'
+    }
+  }
+  options {
+    timeout(time: 20, unit: 'MINUTES')
+  }
+  environment {
+    PROJECT='pipeline-demo'
+    APP='minishift-operator'
+  }
+
+// Create a build configuration from a source if not exists
+  stages {
+    stage('CreateBuild') {
+      when {
+        expression {
+          openshift.withCluster() {
+            openshift.withProject(PROJECT) {
+              return !openshift.selector("bc", "${APP}").exists();
+            }
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newBuild('https://github.com/dav1dli/minishift-operator.git',
+              '--context-dir=sb-app-docker',
+              '--docker-image="registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:latest"')
+          }
+        }
+      }
+    }
+// Trigger a build creating an image
+    stage('Build') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject(PROJECT) {
+              timeout(5) {
+                openshift.selector('bc', APP).startBuild('--wait=true').logs('-f')
+              }
+            }
+          }
+        }
+      }
+    }
+    stage('PromoteDEV') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.tag("${APP}:latest", "${APP}:dev")
+          }
+        }
+      }
+    }
+// Deploy a build to DEV environment
+    stage('CreateDEV') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector('dc', "${APP}-dev").exists()
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newApp("${APP}:latest", "--name=${APP}-dev").narrow('svc').expose()
+          }
+        }
+      }
+    }
+// Run tests against DEV environment
+    stage('TestDEV') {
+      steps {
+        sh "echo STUB: curl -X GET http://\$(oc get route ${APP}-dev --template='{{ .spec.host }}')"
+      }
+    }
+    stage('PromoteSTAGE') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.tag("${APP}:dev", "${APP}:stage")
+          }
+        }
+      }
+    }
+// Deploy a build to STAGE environment
+    stage('CreateSTAGE') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector('dc', "${APP}-stage").exists()
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newApp("${APP}:stage", "--name=${APP}-stage").narrow('svc').expose()
+          }
+        }
+      }
+    }
+// Run tests against STAGE environment
+    stage('TestSTAGE') {
+      steps {
+        sh "echo STUB: curl -X GET http://\$(oc get route ${APP}-stage --template='{{ .spec.host }}')"
+      }
+    }
+  }
+}
