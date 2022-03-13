@@ -7,7 +7,7 @@ application_domain:
 
 image:
   name: sb-app-docker
-  repository: quay.io/repository/dhanamjaya/do400-deploying-environments/sb-app-docker
+  repository: quay.io/dhanamjaya/do400-deploying-environments
   tag: latest
   pullPolicy: IfNotPresent
 service:
