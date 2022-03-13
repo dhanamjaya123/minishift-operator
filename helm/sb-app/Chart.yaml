@@ -8,7 +8,7 @@ keywords:
 name: sb-app
 version: 0.1.0
 sources:
-  - https://github.com/dav1dli/minishift-operator
+  - https://github.com/dhanamjaya123/minishift-operator
 maintainers:
-  - name: dav1dli
-    email: dav1dli@netscape.net
+  - name: dhanamjaya123
+    email: dhanu8121@gmail.com
